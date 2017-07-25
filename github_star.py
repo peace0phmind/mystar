@@ -23,10 +23,13 @@ data = """{
               createdAt
               pushedAt
               license
+              url
               primaryLanguage {
                 name
               }
-              url
+              watchers {
+                totalCount
+              }
               stargazers {
                 totalCount
               }
@@ -73,7 +76,7 @@ def get_next_page_content():
     request = urllib2.Request("https://api.github.com/graphql", payload, headers)
     # request.get_method = lambda: 'POST'
 
-    content = dot_dict.DotDict(json.load(urllib2.urlopen(request)))
+    content = dot_dict.DotDict(json.loads(urllib2.urlopen(request).read().decode('utf-8')))
 
     repos_size = len(content.data.viewer.starredRepositories.edges)
     if repos_size != 0:
@@ -92,21 +95,44 @@ def main():
             repo = dot_dict.DotDict(repo)
             node = repo.node
 
-            print "|[{}]({})|{:.10s}|{}|{:.10s}|{:.10s}|{}|{}|{}|{}|{:.10s}|{}|{:.10s}|".format(
+            repo_line = u"""
+[//]: # ({} start)
+
+## [{}]({}) 
+| watchs: {} | stars: {} | forks: {} | license: {} |
+| :--- | :--- | :--- | :--- |
+| PL: {} | starredAt: {:.10s} | createdAt: {:.10s} | pushedAt: {:.10s} |
+| prCount: {} | prUpdatedAt: {:.10s} | cmCount: {} | cmUpdatedAt: {:.10s} |
+- {}
+
+[//]: # ({} start)
+""".format(
+                node.nameWithOwner,
+
                 node.nameWithOwner,
                 node.url,
-                repo.starredAt,
-                node.license,
-                node.createdAt,
-                node.pushedAt,
-                node.primaryLanguage.name,
+
+                node.watchers.totalCount,
                 node.stargazers.totalCount,
                 node.forks.totalCount,
+                node.license,
+
+                node.primaryLanguage.name,
+                repo.starredAt,
+                node.createdAt,
+                node.pushedAt,
+
                 node.pullRequests.totalCount,
                 node.pullRequests.nodes[0].get("updatedAt"),
                 node.commitComments.totalCount,
-                node.commitComments.nodes[0].get("updatedAt")
+                node.commitComments.nodes[0].get("updatedAt"),
+
+                node.description,
+
+                node.nameWithOwner,
             )
+
+            print repo_line
 
         content = get_next_page_content()
         while_count -= 1
