@@ -2,8 +2,11 @@ import urllib2
 import json
 import dot_dict
 
+with open('.token', 'r') as token_file:
+    token = token_file.read().replace('\n', '')
+
 headers = {
-    "Authorization": "bearer f16ca3824d8ca9b6ec110ace1ea99b1ed217c074"
+    "Authorization": "bearer " + token
 }
 
 data = """{
@@ -89,7 +92,7 @@ def main():
             repo = dot_dict.DotDict(repo)
             node = repo.node
 
-            print "|[%s](%s)|%s|%s|%s|%s|%s|%d|%d|%d|%s|%d|%s|" % (
+            print "|{}({})|{:.10s}|{}|{:.10s}|{:.10s}|{}|{}|{}|{}|{:.10s}|{}|{:.10s}|".format(
                 node.nameWithOwner,
                 node.url,
                 repo.starredAt,
