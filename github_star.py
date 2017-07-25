@@ -92,7 +92,7 @@ def main():
             repo = dot_dict.DotDict(repo)
             node = repo.node
 
-            print "|{}({})|{:.10s}|{}|{:.10s}|{:.10s}|{}|{}|{}|{}|{:.10s}|{}|{:.10s}|".format(
+            print "|[{}]({})|{:.10s}|{}|{:.10s}|{:.10s}|{}|{}|{}|{}|{:.10s}|{}|{:.10s}|".format(
                 node.nameWithOwner,
                 node.url,
                 repo.starredAt,
